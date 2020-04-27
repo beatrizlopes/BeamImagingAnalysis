@@ -1,6 +1,6 @@
 {
     "scaling": 0.00509,
-    "dataname": "Fill4266_rereco_many_medium",
+    "dataname": "Fill4266_rereco_many_medium_newcorr",
     "mintrk": 14,
     "bcids": [
         51,
@@ -9,10 +9,10 @@
         2211,
         2674
     ],
-    "name": "Fill4266_central",
+    "name": "Fill4266_rereco_many_medium_newcorr",
     "nbins": 760,
     "vtxresx": 0.003687,
-    "datapath": "/afs/cern.ch/work/j/joknolle/public/beamimaging",
+    "datapath": "/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/BeamImagingAnalysis/beamimaging/",
     "vtxresy": 0.003675,
     "fill": 4266
 }

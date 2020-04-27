@@ -12,7 +12,7 @@
     "name": "Fill4954_central",
     "nbins": 760,
     "vtxresx": 0.003683,
-    "datapath": "/afs/cern.ch/work/j/joknolle/public/beamimaging",
+    "datapath": "/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/BeamImagingAnalysis/beamimaging",
     "vtxresy": 0.003667,
     "fill": 4954
 }

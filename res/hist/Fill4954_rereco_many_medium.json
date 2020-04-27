@@ -1,0 +1,19 @@
+{
+    "mintrk": 14,
+    "scaling": 0.00492,
+    "dataname": "Fill4954_rereco_many_medium",
+    "vtxresy": 0.003667,
+    "vtxresx": 0.003683,
+    "nbins": 760,
+    "name": "Fill4954_rereco_many_medium",
+    "datapath": "beamimaging",
+    "heavyion": false,
+    "bcids": [
+        41,
+        281,
+        872,
+        1783,
+        2063
+    ],
+    "fill": 4954
+}

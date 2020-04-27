@@ -74,9 +74,12 @@ class RadialResidualPlot(SingleHistBase):
                     e = data.GetBinErrorLow(xbin+1, ybin+1)
                 else:
                     e = data.GetBinErrorUp(xbin+1, ybin+1)
+
                 x = data.GetXaxis().GetBinCenter(xbin+1)
                 y = data.GetYaxis().GetBinCenter(ybin+1)
-                res.Fill(calcr(x, y), (d-m)/e)
+
+                if e!=0.:
+                    res.Fill(calcr(x, y), (d-m)/e)
         return res
 
     def chisq(self):
@@ -126,7 +129,9 @@ class AngularResidualPlot(SingleHistBase):
                     e = data.GetBinErrorUp(xbin+1, ybin+1)
                 x = data.GetXaxis().GetBinCenter(xbin+1)
                 y = data.GetYaxis().GetBinCenter(ybin+1)
-                res.Fill(calcphi(x, y), (d-m)/e)
+                if e!=0.:
+                    res.Fill(calcphi(x, y), (d-m)/e)
+
         return res
 
     def chisq(self):

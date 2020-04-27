@@ -4,7 +4,7 @@ from sys import argv
 
 from lib.submit import QSubmitter as submit
 
-ma = 'knollejo@mail.desy.de'
+ma = 'beatriz.lopes@desy.de'
 mo = False
 number = 20 #100
 test = False

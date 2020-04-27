@@ -7,12 +7,12 @@ from sys import argv
 from ROOT import TChain, TH1F
 
 from lib.io import BareRootFile, NamedFloat, NamedString, Timestamp
-from lib.prepare import make_histograms, make_vdmhistos
+from lib.prepare import make_histograms, make_histograms_forbcid, make_vdmhistos
 
 def prepare_histograms(
     configfile, outputpath, suffix, nbins, mintrk, scaling=1.0, verbose=False,
     stepsize=None, stepsize1Y=None, stepsize2X=None, stepsize2Y=None,
-    extracond=None, singlepair=False
+    extracond=None, singlepair=False, beamcorrectionsfile=None, betacorrectionsfile=None
 ):
     scans = ['1X', '1Y', '2X', '2Y']
     if singlepair:
@@ -54,6 +54,7 @@ def prepare_histograms(
                        .format(sourcescan[scan][0], sourcescan[scan][1], bcid)
             trees[bcid] = TChain(treename)
             trees[bcid].Add(filename)
+            print trees[bcid].GetEntries()
             if singlepair and scan != sourcescan[scan]:
                 trees[bcid].SetName(replace(trees[bcid].GetName(), 'Beam1', 'Beam2'))
         if stepsize:
@@ -62,13 +63,21 @@ def prepare_histograms(
                 scaling=scaling, crange=crange, verbose=verbose
             )
         else:
-            hists = make_histograms(
+            hists = make_histograms_forbcid(
                 trees, nbins, mintrk, scaling=scaling, verbose=verbose,
-                extracond=extracond
+                extracond=extracond, beamcorrectionsfile=beamcorrectionsfile, betacorrectionsfile=betacorrectionsfile
             )
+            mergehistname = 'Beam{0}Move{1}' \
+                       .format(sourcescan[scan][0], sourcescan[scan][1])
+            mergedhists = make_histograms(
+                hists, mergehistname, nbins
+            )
+            mergedhists.SetDirectory(0)
+            histograms.append(mergedhists)
         for hist in hists.itervalues():
             hist.SetDirectory(0)
             histograms.append(hist)
+
         if not singlepair or not scan.startswith('2'):
             condition = 'vtx_nTrk>={0}'.format(mintrk)
             errx = TH1F('errx', '', 100, 0.0, 0.03)
@@ -128,10 +137,10 @@ def main():
     outputpath = argv[2]
     if outputpath.endswith('/'):
         outputpath = outputpath[:-1]
-    if len(argv) < 4 or not argv[3] or argv[3] not in ['many', 'some', 'few']:
+    if len(argv) < 4 or not argv[3] or argv[3] not in ['many', 'some', 'few', 'fewer']:
         raise RuntimeError('Specify 3rd argument: Bins (many, some, or few).')
     binning = argv[3]
-    nbins = {'many': 760, 'some': 190, 'few': 95}[binning]
+    nbins = {'many': 760, 'some': 190, 'few': 95, 'fewer': 50}[binning]
     if len(argv) < 5 or not argv[4] or argv[4] not in ['l', 'm', 't', 'vt', 'et']:
         raise RuntimeError(
             'Specify 4th argument: Track selection (l, m, t, vt, et).'
@@ -151,7 +160,7 @@ def main():
         raise RuntimeError('Optional 5th argument: scaling (float).')
     suffix = '{0}_{1}'.format(binning, selection)
     if len(argv) < 7 or not argv[6] or not argv[6] in (
-        'vdm', 'drift', 'extra', 'singlevdm', 'mixed',
+        'vdm', 'drift', 'extra', 'corr', 'singlevdm', 'mixed',
     ):
         prepare_histograms(
             configfile, outputpath, suffix, nbins, mintrk,
@@ -163,6 +172,15 @@ def main():
         prepare_histograms(
             configfile, outputpath, suffix, nbins, mintrk,
             scaling=scaling, verbose=True, extracond=extracond
+        )
+    elif argv[6] == 'corr':
+        if not argv[7] :
+            raise RuntimeError('Specify 7th argument: Json file with beam beam correlations .')
+        if not argv[8] :
+            raise RuntimeError('Specify 8th argument: Json file with dynamic beta correlations .')
+        prepare_histograms(
+            configfile, outputpath, suffix, nbins, mintrk,
+            scaling=scaling, verbose=True, beamcorrectionsfile = argv[7], betacorrectionsfile = argv[8]
         )
     elif argv[6] == 'vdm':
         if len(argv) < 9 or not argv[7] or not argv[8]:
